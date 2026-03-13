@@ -132,7 +132,7 @@ def _register_extensions(app: Flask) -> None:
             run_scan,
             trigger="interval",
             seconds=interval,
-            kwargs={"ble_duration": ble_duration},
+            kwargs={"ble_duration": ble_duration, "app": app},
             id="bt_scan",
             replace_existing=True,
         )
