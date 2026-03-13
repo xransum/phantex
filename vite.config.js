@@ -19,6 +19,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "frontend/src/css/main.css"),
         bt: resolve(__dirname, "frontend/src/js/bt.js"),
+        wte: resolve(__dirname, "frontend/src/js/wte.js"),
       },
       output: {
         entryFileNames: "[name].js",

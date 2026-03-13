@@ -122,20 +122,32 @@ def _init_database(app: Flask) -> None:
 
 
 def _register_extensions(app: Flask) -> None:
-    from phantex.bt.tasks import run_scan
+    from phantex.bt.tasks import run_scan as bt_scan
     from phantex.extensions import scheduler
+    from phantex.wte.tasks import run_scan as wte_scan
 
     if not app.testing:
-        interval = app.config.get("BT_SCAN_INTERVAL", 5)
+        bt_interval = app.config.get("BT_SCAN_INTERVAL", 5)
         ble_duration = app.config.get("BT_BLE_SCAN_DURATION", 3.0)
         scheduler.add_job(
-            run_scan,
+            bt_scan,
             trigger="interval",
-            seconds=interval,
+            seconds=bt_interval,
             kwargs={"ble_duration": ble_duration, "app": app},
             id="bt_scan",
             replace_existing=True,
         )
+
+        wte_interval = app.config.get("WTE_SCAN_INTERVAL", 10)
+        scheduler.add_job(
+            wte_scan,
+            trigger="interval",
+            seconds=wte_interval,
+            kwargs={"app": app},
+            id="wte_scan",
+            replace_existing=True,
+        )
+
         if not scheduler.running:
             scheduler.start()
         app.extensions["scheduler"] = scheduler
@@ -143,8 +155,10 @@ def _register_extensions(app: Flask) -> None:
 
 def _register_blueprints(app: Flask) -> None:
     from phantex.bt import bp as bt_bp
+    from phantex.wte import bp as wte_bp
 
     app.register_blueprint(bt_bp)
+    app.register_blueprint(wte_bp)
 
     @app.get("/")
     def index() -> str:

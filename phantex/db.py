@@ -25,6 +25,16 @@ CREATE TABLE IF NOT EXISTS bt_history (
     first_seen   TEXT    NOT NULL,
     last_seen    TEXT    NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS wte_history (
+    bssid      TEXT    NOT NULL PRIMARY KEY,
+    ssid       TEXT    NOT NULL,
+    channel    INTEGER,
+    signal     INTEGER,
+    security   TEXT,
+    first_seen TEXT    NOT NULL,
+    last_seen  TEXT    NOT NULL
+);
 """
 
 

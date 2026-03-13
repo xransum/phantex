@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}WTE // WIRELESS TERMINAL EXPLORER{% endblock %}
+
+{% block content %}
+<div class="bt-page">
+
+  <div class="bt-header">
+    <div class="bt-title-row">
+      <h1 class="bt-title">WIRELESS TERMINAL EXPLORER</h1>
+      <span class="bt-badge" id="wte-status">INITIALIZING...</span>
+    </div>
+    <div class="bt-meta-row">
+      <span class="meta-item">NETWORKS: <span id="wte-count">--</span></span>
+      <span class="meta-sep">//</span>
+      <span class="meta-item">LAST SCAN: <span id="wte-last-scan">--</span></span>
+      <span class="meta-sep">//</span>
+      <span class="meta-item">SEEN: <span id="wte-seen-count">0</span> <button class="meta-btn" id="wte-history-open" type="button">[VIEW]</button></span>
+    </div>
+  </div>
+
+  <div id="wte-history-modal" class="bt-modal hidden" role="dialog" aria-modal="true" aria-label="Network history">
+    <div class="bt-modal-box">
+      <div class="bt-modal-header">
+        <span class="bt-modal-title">NETWORK HISTORY</span>
+        <button class="bt-modal-close" id="wte-history-close" type="button">[X]</button>
+      </div>
+      <div class="bt-modal-body">
+        <table class="bt-table" id="wte-history-table">
+          <thead>
+            <tr>
+              <th data-col="ssid">SSID</th>
+              <th data-col="bssid">BSSID</th>
+              <th data-col="channel">CH</th>
+              <th data-col="signal">SIGNAL</th>
+              <th data-col="security">SECURITY</th>
+              <th data-col="first_seen">FIRST SEEN</th>
+              <th data-col="last_seen">LAST SEEN</th>
+            </tr>
+          </thead>
+          <tbody id="wte-history-tbody">
+            <tr class="empty-row"><td colspan="7">LOADING...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bt-modal-footer">
+        <button class="bt-modal-clear" id="wte-history-clear" type="button">CLEAR HISTORY</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="wte-warning" class="bt-warning hidden">
+    <span class="warn-prefix">[WARN]</span>
+    <span id="wte-warning-text"></span>
+  </div>
+
+  <div class="bt-table-wrap">
+    <table class="bt-table" id="wte-table">
+      <thead>
+        <tr>
+          <th data-col="ssid">SSID</th>
+          <th data-col="bssid">BSSID</th>
+          <th data-col="channel">CH</th>
+          <th data-col="signal">SIGNAL</th>
+          <th data-col="security">SECURITY</th>
+          <th data-col="first_seen">FIRST SEEN</th>
+          <th data-col="last_seen">LAST SEEN</th>
+        </tr>
+      </thead>
+      <tbody id="wte-tbody">
+        <tr class="empty-row">
+          <td colspan="7">SCANNING... AWAITING FIRST RESULT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bt-log">
+    <div class="bt-log-header">
+      <span class="bt-log-title">SCAN LOG</span>
+      <button class="bt-log-clear" id="wte-log-clear" type="button">CLEAR</button>
+    </div>
+    <div class="bt-log-body" id="wte-log-body" aria-live="polite" aria-label="Scan log"></div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='dist/wte.js') }}"></script>
+{% endblock %}

@@ -42,6 +42,11 @@ class BaseConfig:
     # Seconds after which a device is considered stale in the store.
     BT_STALE_THRESHOLD: int = int(os.environ.get("PHANTEX_BT_STALE_THRESHOLD", "30"))
 
+    # WiFi scan interval in seconds.
+    WTE_SCAN_INTERVAL: int = int(os.environ.get("PHANTEX_WTE_SCAN_INTERVAL", "10"))
+    # Seconds after which a network is considered stale in the store.
+    WTE_STALE_THRESHOLD: int = int(os.environ.get("PHANTEX_WTE_STALE_THRESHOLD", "60"))
+
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration -- debug on, verbose logging."""
@@ -61,3 +66,4 @@ class TestingConfig(BaseConfig):
     TESTING: bool = True
     DEBUG: bool = True
     BT_SCAN_INTERVAL: int = 999  # prevent scheduler from firing during tests
+    WTE_SCAN_INTERVAL: int = 999  # prevent scheduler from firing during tests
