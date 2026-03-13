@@ -143,11 +143,21 @@ def get_store_snapshot() -> tuple[list[DeviceRecord], datetime | None, str | Non
         return list(_device_store.values()), _last_scan, _scan_warning
 
 
-def _merge_records(new_records: list[DeviceRecord]) -> None:
-    """Merge new scan results into the store, preserving first_seen."""
+def _merge_records(new_records: list[DeviceRecord], upsert_fn: object = None) -> None:
+    """Merge new scan results into the store, preserving first_seen.
+
+    If *upsert_fn* is provided it is called for each record after the
+    in-memory store is updated. Used by tasks.py to write to SQLite history
+    without introducing a Flask/DB dependency here.
+    """
     with _store_lock:
         for record in new_records:
             existing = _device_store.get(record.mac)
             if existing is not None:
                 record.first_seen = existing.first_seen
             _device_store[record.mac] = record
+            if upsert_fn is not None:
+                try:  # noqa: SIM105
+                    upsert_fn(record)  # type: ignore[operator]
+                except Exception:  # noqa: BLE001
+                    pass  # never let history writes break the live store

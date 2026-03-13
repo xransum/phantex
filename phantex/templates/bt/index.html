@@ -16,6 +16,38 @@
       <span class="meta-item">MODE: <span id="bt-mode">BLE + CLASSIC</span></span>
       <span class="meta-sep">//</span>
       <span class="meta-item">LAST SCAN: <span id="bt-last-scan">--</span></span>
+      <span class="meta-sep">//</span>
+      <span class="meta-item">SEEN: <span id="bt-seen-count">0</span> <button class="meta-btn" id="bt-history-open" type="button">[VIEW]</button></span>
+    </div>
+  </div>
+
+  <div id="bt-history-modal" class="bt-modal hidden" role="dialog" aria-modal="true" aria-label="Device history">
+    <div class="bt-modal-box">
+      <div class="bt-modal-header">
+        <span class="bt-modal-title">DEVICE HISTORY</span>
+        <button class="bt-modal-close" id="bt-history-close" type="button">[X]</button>
+      </div>
+      <div class="bt-modal-body">
+        <table class="bt-table" id="bt-history-table">
+          <thead>
+            <tr>
+              <th>MAC</th>
+              <th>NAME</th>
+              <th>TYPE</th>
+              <th>RSSI</th>
+              <th>CLASS</th>
+              <th>FIRST SEEN</th>
+              <th>LAST SEEN</th>
+            </tr>
+          </thead>
+          <tbody id="bt-history-tbody">
+            <tr class="empty-row"><td colspan="7">LOADING...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bt-modal-footer">
+        <button class="bt-modal-clear" id="bt-history-clear" type="button">CLEAR HISTORY</button>
+      </div>
     </div>
   </div>
 
@@ -43,6 +75,14 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="bt-log">
+    <div class="bt-log-header">
+      <span class="bt-log-title">SCAN LOG</span>
+      <button class="bt-log-clear" id="bt-log-clear" type="button">CLEAR</button>
+    </div>
+    <div class="bt-log-body" id="bt-log-body" aria-live="polite" aria-label="Scan log"></div>
   </div>
 
 </div>

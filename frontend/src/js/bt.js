@@ -6,9 +6,17 @@
 
 const POLL_INTERVAL_MS = 2000;
 const STALE_THRESHOLD_MS = 30_000;
+const LOG_MAX_ENTRIES = 100;
 
 /** @type {Map<string, {record: object, lastUpdated: number}>} */
 const deviceState = new Map();
+
+/**
+ * JS-side set of every MAC seen this session (page lifetime only).
+ * Drives the SEEN counter -- does not reset between polls.
+ * @type {Set<string>}
+ */
+const historyState = new Set();
 
 // ---------------------------------------------------------------------------
 // DOM refs (set after DOMContentLoaded)
@@ -19,6 +27,10 @@ let countEl;
 let lastScanEl;
 let warningEl;
 let warningTextEl;
+let logBody;
+let seenCountEl;
+let historyModal;
+let historyTbody;
 
 // ---------------------------------------------------------------------------
 // Polling
@@ -32,6 +44,7 @@ async function poll() {
     render(data);
   } catch (err) {
     setStatus("ERROR", false);
+    appendLog(`poll failed: ${err.message}`, "log-error");
     console.error("[BT] poll failed:", err);
   }
 }
@@ -76,6 +89,21 @@ function render(data) {
   // Track which MACs came in this cycle
   const incomingMacs = new Set(devices.map((d) => d.mac));
 
+  // Detect new devices before updating state
+  for (const record of devices) {
+    if (!deviceState.has(record.mac)) {
+      const label = record.name && record.name !== "Unknown"
+        ? `${record.name} (${record.mac})`
+        : record.mac;
+      appendLog(`new device: ${label} [${record.device_type}]${record.rssi != null ? ` rssi=${record.rssi} dBm` : ""}`, "log-new");
+    }
+    // Track in session history set
+    if (!historyState.has(record.mac)) {
+      historyState.add(record.mac);
+      updateSeenCount();
+    }
+  }
+
   // Update state map
   for (const record of devices) {
     deviceState.set(record.mac, { record, lastUpdated: now });
@@ -84,8 +112,23 @@ function render(data) {
   // Mark stale entries (present in state but not in this cycle)
   for (const [mac, entry] of deviceState.entries()) {
     if (!incomingMacs.has(mac)) {
+      const wasRecent = now - entry.lastUpdated <= STALE_THRESHOLD_MS;
+      const isNowStale = now - entry.lastUpdated > STALE_THRESHOLD_MS;
+      if (wasRecent && isNowStale) {
+        const label = entry.record.name && entry.record.name !== "Unknown"
+          ? `${entry.record.name} (${mac})`
+          : mac;
+        appendLog(`device stale: ${label}`, "log-stale");
+      }
       entry.lastUpdated = entry.lastUpdated; // preserve existing time
     }
+  }
+
+  // Log scan summary
+  if (devices.length > 0) {
+    appendLog(`scan complete: ${devices.length} device(s) visible`);
+  } else {
+    appendLog("scan complete: no devices found");
   }
 
   updateTable(now);
@@ -172,6 +215,110 @@ function buildRowCells(record) {
 }
 
 // ---------------------------------------------------------------------------
+// History modal
+// ---------------------------------------------------------------------------
+
+function updateSeenCount() {
+  if (seenCountEl) seenCountEl.textContent = historyState.size;
+}
+
+async function openHistoryModal() {
+  historyModal.classList.remove("hidden");
+  await loadHistory();
+}
+
+function closeHistoryModal() {
+  historyModal.classList.add("hidden");
+}
+
+async function loadHistory() {
+  if (!historyTbody) return;
+  historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7">LOADING...</td></tr>`;
+  try {
+    const res = await fetch("/bt/history");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const payload = await res.json();
+    renderHistoryRows(payload.devices || []);
+  } catch (err) {
+    historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7" style="color:var(--red)">ERROR: ${escHtml(err.message)}</td></tr>`;
+  }
+}
+
+/**
+ * @param {Array<object>} rows
+ */
+function renderHistoryRows(rows) {
+  if (!rows.length) {
+    historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7">NO HISTORY YET</td></tr>`;
+    return;
+  }
+  historyTbody.innerHTML = rows.map((r) => {
+    const typeClass = r.device_type === "BLE" ? "type-ble" : "type-classic";
+    const rssi = r.rssi != null ? `${r.rssi} dBm` : "--";
+    const dc = r.device_class || "--";
+    return `<tr>
+      <td>${escHtml(r.mac)}</td>
+      <td>${escHtml(r.name)}</td>
+      <td class="${typeClass}">${escHtml(r.device_type)}</td>
+      <td>${escHtml(rssi)}</td>
+      <td>${escHtml(dc)}</td>
+      <td>${escHtml(formatTime(r.first_seen))}</td>
+      <td>${escHtml(formatTime(r.last_seen))}</td>
+    </tr>`;
+  }).join("");
+}
+
+async function clearHistory() {
+  try {
+    const res = await fetch("/bt/history/clear", { method: "POST" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    historyState.clear();
+    updateSeenCount();
+    historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7">NO HISTORY YET</td></tr>`;
+    appendLog("device history cleared", "log-warn");
+  } catch (err) {
+    appendLog(`clear history failed: ${err.message}`, "log-error");
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Log panel
+// ---------------------------------------------------------------------------
+
+/**
+ * Append a line to the scan log panel.
+ * @param {string} msg
+ * @param {string} [cls] - optional extra CSS class (log-new, log-stale, log-error, log-warn)
+ */
+function appendLog(msg, cls) {
+  if (!logBody) return;
+
+  const now = new Date().toLocaleTimeString();
+  const entry = document.createElement("div");
+  entry.className = "bt-log-entry";
+
+  const timeSpan = document.createElement("span");
+  timeSpan.className = "bt-log-time";
+  timeSpan.textContent = now;
+
+  const msgSpan = document.createElement("span");
+  msgSpan.className = cls ? `bt-log-msg ${cls}` : "bt-log-msg";
+  msgSpan.textContent = msg;
+
+  entry.appendChild(timeSpan);
+  entry.appendChild(msgSpan);
+  logBody.appendChild(entry);
+
+  // Trim to max entries
+  while (logBody.children.length > LOG_MAX_ENTRIES) {
+    logBody.removeChild(logBody.firstChild);
+  }
+
+  // Auto-scroll to bottom
+  logBody.scrollTop = logBody.scrollHeight;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -221,7 +368,35 @@ document.addEventListener("DOMContentLoaded", () => {
   lastScanEl = document.getElementById("bt-last-scan");
   warningEl = document.getElementById("bt-warning");
   warningTextEl = document.getElementById("bt-warning-text");
+  logBody = document.getElementById("bt-log-body");
+  seenCountEl = document.getElementById("bt-seen-count");
+  historyModal = document.getElementById("bt-history-modal");
+  historyTbody = document.getElementById("bt-history-tbody");
 
+  const clearBtn = document.getElementById("bt-log-clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (logBody) logBody.innerHTML = "";
+    });
+  }
+
+  const historyOpenBtn = document.getElementById("bt-history-open");
+  if (historyOpenBtn) historyOpenBtn.addEventListener("click", openHistoryModal);
+
+  const historyCloseBtn = document.getElementById("bt-history-close");
+  if (historyCloseBtn) historyCloseBtn.addEventListener("click", closeHistoryModal);
+
+  const historyClearBtn = document.getElementById("bt-history-clear");
+  if (historyClearBtn) historyClearBtn.addEventListener("click", clearHistory);
+
+  // Close modal on overlay click
+  if (historyModal) {
+    historyModal.addEventListener("click", (e) => {
+      if (e.target === historyModal) closeHistoryModal();
+    });
+  }
+
+  appendLog("scanner initializing...");
   setStatus("CONNECTING", false);
   poll();
   setInterval(poll, POLL_INTERVAL_MS);

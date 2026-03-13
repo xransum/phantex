@@ -394,6 +394,93 @@ a:hover {
 .type-ble     { color: var(--green-bright); }
 .type-classic { color: var(--green-mid); }
 
+/* -- BT log panel ---------------------------------------------------------- */
+.bt-log {
+  border: 1px solid var(--border-active);
+  display: flex;
+  flex-direction: column;
+}
+
+.bt-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.75rem;
+  background: var(--green-faint);
+  border-bottom: 1px solid var(--border-active);
+}
+
+.bt-log-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--green-bright);
+}
+
+.bt-log-clear {
+  background: none;
+  border: 1px solid var(--green-dim);
+  color: var(--green-dim);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 0.1rem 0.4rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.bt-log-clear:hover {
+  border-color: var(--green-bright);
+  color: var(--green-bright);
+}
+
+.bt-log-body {
+  height: 180px;
+  overflow-y: auto;
+  padding: 0.4rem 0;
+  font-size: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+.bt-log-entry {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.1rem 0.75rem;
+  line-height: 1.5;
+}
+
+.bt-log-entry:last-child {
+  color: var(--green-bright);
+}
+
+.bt-log-entry + .bt-log-entry:last-child {
+  background: rgba(0, 255, 65, 0.04);
+}
+
+.bt-log-time {
+  flex-shrink: 0;
+  color: var(--text-faint);
+}
+
+.bt-log-msg {
+  color: var(--text-dim);
+  word-break: break-all;
+}
+
+.bt-log-msg.log-new    { color: var(--green-bright); }
+.bt-log-msg.log-stale  { color: var(--text-faint); }
+.bt-log-msg.log-error  { color: var(--red); }
+.bt-log-msg.log-warn   { color: var(--amber); }
+
+.bt-log-body::-webkit-scrollbar {
+  width: 4px;
+}
+.bt-log-body::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.bt-log-body::-webkit-scrollbar-thumb {
+  background: var(--green-dim);
+}
+
 /* -- Error pages ----------------------------------------------------------- */
 .error-page {
   display: flex;
@@ -426,3 +513,115 @@ a:hover {
 
 /* -- Utilities ------------------------------------------------------------- */
 .hidden { display: none !important; }
+
+/* -- Meta row button ------------------------------------------------------- */
+.meta-btn {
+  background: none;
+  border: none;
+  color: var(--green-mid);
+  font-family: var(--font-mono);
+  font-size: inherit;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.05em;
+  transition: color 0.15s;
+}
+
+.meta-btn:hover {
+  color: var(--green-bright);
+}
+
+/* -- History modal --------------------------------------------------------- */
+.bt-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bt-modal.hidden {
+  display: none !important;
+}
+
+.bt-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-active);
+  display: flex;
+  flex-direction: column;
+  width: min(900px, 95vw);
+  max-height: 80vh;
+}
+
+.bt-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.75rem;
+  background: var(--green-faint);
+  border-bottom: 1px solid var(--border-active);
+  flex-shrink: 0;
+}
+
+.bt-modal-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--green-bright);
+}
+
+.bt-modal-close {
+  background: none;
+  border: none;
+  color: var(--green-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.bt-modal-close:hover {
+  color: var(--green-bright);
+}
+
+.bt-modal-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bt-modal-body::-webkit-scrollbar {
+  width: 4px;
+}
+.bt-modal-body::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.bt-modal-body::-webkit-scrollbar-thumb {
+  background: var(--green-dim);
+}
+
+.bt-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.4rem 0.75rem;
+  border-top: 1px solid var(--border-active);
+  flex-shrink: 0;
+}
+
+.bt-modal-clear {
+  background: none;
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.bt-modal-clear:hover {
+  background: rgba(255, 51, 51, 0.1);
+}
