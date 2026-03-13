@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}PHANTEX // RECON TERMINAL{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">LOCAL RECON TERMINAL</h1>
+    <p class="dashboard-subtitle">Select a module to begin surveillance.</p>
+  </div>
+
+  <div class="module-grid">
+    <a href="{{ url_for('bte.index') }}" class="module-card module-card--active">
+      <div class="module-card__header">
+        <span class="module-card__id">01</span>
+        <span class="module-card__status status--active">ACTIVE</span>
+      </div>
+      <h2 class="module-card__title">BTE</h2>
+      <p class="module-card__desc">Bluetooth Terminal Explorer</p>
+      <p class="module-card__detail">Scan for nearby Classic and BLE Bluetooth devices. Displays MAC, name, signal strength, type, and timestamps.</p>
+      <span class="module-card__link">-> /bte</span>
+    </a>
+
+    <div class="module-card module-card--soon">
+      <div class="module-card__header">
+        <span class="module-card__id">02</span>
+        <span class="module-card__status status--soon">COMING SOON</span>
+      </div>
+      <h2 class="module-card__title">WTE</h2>
+      <p class="module-card__desc">Wireless Terminal Explorer</p>
+      <p class="module-card__detail">Scan for nearby WiFi networks. SSIDs, BSSIDs, signal strength, channel, encryption type.</p>
+      <span class="module-card__link dim">-> /wte</span>
+    </div>
+
+    <div class="module-card module-card--soon">
+      <div class="module-card__header">
+        <span class="module-card__id">03</span>
+        <span class="module-card__status status--soon">COMING SOON</span>
+      </div>
+      <h2 class="module-card__title">MORE</h2>
+      <p class="module-card__desc">Additional Modules</p>
+      <p class="module-card__detail">More local OSINT and recon capabilities coming. Port scanning, network enumeration, and beyond.</p>
+      <span class="module-card__link dim">-> TBD</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

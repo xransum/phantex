@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}PHANTEX{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dist/main.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="terminal-frame">
+    <header class="site-header">
+      <div class="header-left">
+        <a href="{{ url_for('index') }}" class="logo">PHANTEX<span class="cursor">_</span></a>
+        <span class="version">v{{ app_version }}</span>
+      </div>
+      <nav class="header-nav">
+        <a href="{{ url_for('bte.index') }}" class="nav-link {% if request.blueprint == 'bte' %}active{% endif %}">
+          /bte
+        </a>
+      </nav>
+    </header>
+
+    <main class="site-main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <span class="footer-text">PHANTEX // LOCAL RECON TERMINAL // {{ app_version }}</span>
+    </footer>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

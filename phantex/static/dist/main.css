@@ -1,0 +1,428 @@
+/* ---------------------------------------------------------------------------
+   Phantex -- terminal aesthetic
+   CSS custom properties + layout. No preprocessor.
+   --------------------------------------------------------------------------- */
+
+/* -- Reset & base ---------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green-bright:   #00ff41;
+  --green-mid:      #00cc33;
+  --green-dim:      #008f11;
+  --green-faint:    #003300;
+  --amber:          #ffb000;
+  --red:            #ff3333;
+  --bg:             #0a0a0a;
+  --bg-card:        #0d0d0d;
+  --bg-card-hover:  #111;
+  --border:         #1a1a1a;
+  --border-active:  var(--green-dim);
+  --text:           var(--green-bright);
+  --text-dim:       var(--green-dim);
+  --text-faint:     #2a5a2a;
+  --font-mono:      "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace,
+                    "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono",
+                    "Courier New", monospace;
+  --font-size:      14px;
+  --line-height:    1.6;
+  --scan-line-opacity: 0.04;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CRT scanlines overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scan-line-opacity)) 2px,
+    rgba(0, 0, 0, var(--scan-line-opacity)) 4px
+  );
+}
+
+a {
+  color: var(--green-mid);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--green-bright);
+  text-decoration: underline;
+}
+
+/* -- Terminal frame -------------------------------------------------------- */
+.terminal-frame {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* -- Header ---------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-active);
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--green-bright);
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+.cursor {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.version {
+  margin-left: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.header-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--green-bright);
+  text-decoration: none;
+}
+
+/* -- Main ------------------------------------------------------------------ */
+.site-main {
+  flex: 1;
+}
+
+/* -- Footer ---------------------------------------------------------------- */
+.site-footer {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+.footer-text {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+}
+
+/* -- Dashboard (index page) ------------------------------------------------ */
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  font-size: 1.4rem;
+  letter-spacing: 0.2em;
+  color: var(--green-bright);
+  margin-bottom: 0.4rem;
+}
+
+.dashboard-subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.module-card {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 0.15s, background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.module-card--active {
+  border-color: var(--border-active);
+  cursor: pointer;
+}
+
+.module-card--active:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--green-mid);
+  text-decoration: none;
+  color: inherit;
+}
+
+.module-card--soon {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.module-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.module-card__id {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.15em;
+}
+
+.module-card__status {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid currentColor;
+}
+
+.status--active  { color: var(--green-bright); }
+.status--soon    { color: var(--text-dim); }
+
+.module-card__title {
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  color: var(--green-bright);
+}
+
+.module-card__desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.module-card__detail {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.module-card__link {
+  font-size: 0.8rem;
+  color: var(--green-mid);
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.module-card__link.dim {
+  color: var(--text-faint);
+}
+
+/* -- BTE page -------------------------------------------------------------- */
+.bte-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bte-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bte-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bte-title {
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  color: var(--green-bright);
+}
+
+.bte-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--green-dim);
+  color: var(--green-dim);
+}
+
+.bte-badge.scanning {
+  border-color: var(--green-bright);
+  color: var(--green-bright);
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.bte-meta-row {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+}
+
+.meta-sep {
+  color: var(--text-faint);
+}
+
+/* -- Warning banner -------------------------------------------------------- */
+.bte-warning {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--amber);
+  background: rgba(255, 176, 0, 0.05);
+  font-size: 0.8rem;
+  color: var(--amber);
+}
+
+.bte-warning.hidden {
+  display: none;
+}
+
+.warn-prefix {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* -- BTE table ------------------------------------------------------------- */
+.bte-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-active);
+}
+
+.bte-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.bte-table thead tr {
+  background: var(--green-faint);
+}
+
+.bte-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  color: var(--green-bright);
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border-active);
+  white-space: nowrap;
+}
+
+.bte-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--green-mid);
+  white-space: nowrap;
+}
+
+.bte-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.bte-table tbody tr.row-new {
+  animation: row-fade-in 0.4s ease-out forwards;
+}
+
+@keyframes row-fade-in {
+  from { background: rgba(0, 255, 65, 0.12); }
+  to   { background: transparent; }
+}
+
+.bte-table tbody tr.row-stale td {
+  color: var(--text-faint);
+}
+
+.bte-table .empty-row td {
+  text-align: center;
+  color: var(--text-faint);
+  padding: 2rem;
+  letter-spacing: 0.1em;
+}
+
+.type-ble     { color: var(--green-bright); }
+.type-classic { color: var(--green-mid); }
+
+/* -- Error pages ----------------------------------------------------------- */
+.error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4rem 0;
+  gap: 0.75rem;
+}
+
+.error-code {
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.error-msg {
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--green-dim);
+}
+
+.error-link {
+  font-size: 0.9rem;
+  color: var(--green-mid);
+  margin-top: 1rem;
+}
+
+/* -- Utilities ------------------------------------------------------------- */
+.hidden { display: none !important; }
