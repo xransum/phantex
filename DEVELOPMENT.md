@@ -91,7 +91,7 @@ sudo setcap cap_net_raw+eip $(which hcitool)
 ```
 
 Or run the app with `sudo` (not recommended for regular use). If neither is
-an option, the app falls back to BLE-only and shows a warning banner on `/bte`.
+an option, the app falls back to BLE-only and shows a warning banner on `/bt`.
 
 ## Non-uv setup
 
@@ -113,16 +113,16 @@ phantex/
    -- app.py              Flask factory (create_app)
    -- extensions.py       APScheduler instance (unbound)
    -- settings.py         Config classes (Dev/Prod/Testing)
-   -- bte/                Bluetooth Terminal Explorer blueprint
+   -- bt/                Bluetooth blueprint
       -- __init__.py      Blueprint definition
-      -- views.py         GET /bte, GET /bte/data
+      -- views.py         GET /bt, GET /bt/data
       -- engine.py        Scan logic + thread-safe device store
       -- tasks.py         APScheduler job
    -- templates/          Jinja2 templates
    -- static/dist/        Vite build output (committed)
 -- frontend/              JS/CSS source files
    -- src/css/main.css    Terminal aesthetic styles
-   -- src/js/bte.js       BTE polling + DOM update logic
+   -- src/js/bt.js        BT polling + DOM update logic
 -- tests/                 pytest tests
 -- vite.config.js         Vite build config
 -- pyproject.toml         Python project + tool config

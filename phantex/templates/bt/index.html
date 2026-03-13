@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}BT // BLUETOOTH SCANNER{% endblock %}
+
+{% block content %}
+<div class="bt-page">
+
+  <div class="bt-header">
+    <div class="bt-title-row">
+      <h1 class="bt-title">BLUETOOTH SCANNER</h1>
+      <span class="bt-badge" id="bt-status">INITIALIZING...</span>
+    </div>
+    <div class="bt-meta-row">
+      <span class="meta-item">DEVICES: <span id="bt-count">--</span></span>
+      <span class="meta-sep">//</span>
+      <span class="meta-item">MODE: <span id="bt-mode">BLE + CLASSIC</span></span>
+      <span class="meta-sep">//</span>
+      <span class="meta-item">LAST SCAN: <span id="bt-last-scan">--</span></span>
+    </div>
+  </div>
+
+  <div id="bt-warning" class="bt-warning hidden">
+    <span class="warn-prefix">[WARN]</span>
+    <span id="bt-warning-text"></span>
+  </div>
+
+  <div class="bt-table-wrap">
+    <table class="bt-table" id="bt-table">
+      <thead>
+        <tr>
+          <th>MAC</th>
+          <th>NAME</th>
+          <th>TYPE</th>
+          <th>RSSI</th>
+          <th>CLASS</th>
+          <th>FIRST SEEN</th>
+          <th>LAST SEEN</th>
+        </tr>
+      </thead>
+      <tbody id="bt-tbody">
+        <tr class="empty-row">
+          <td colspan="7">SCANNING... AWAITING FIRST RESULT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='dist/bt.js') }}"></script>
+{% endblock %}

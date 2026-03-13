@@ -1,4 +1,4 @@
-"""BTE scanner engine.
+"""BT scanner engine.
 
 Pure scanning logic -- no Flask, no APScheduler dependencies.
 Both scan functions return results independently so they can be

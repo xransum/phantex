@@ -1,1 +1,0 @@
-"""BTE test sub-package."""

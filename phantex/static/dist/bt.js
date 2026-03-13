@@ -1,7 +1,7 @@
-//#region frontend/src/js/bte.js
+//#region frontend/src/js/bt.js
 /**
-* BTE -- Bluetooth Terminal Explorer
-* Polls /bte/data every 2s and updates the device table in place.
+* BT -- Bluetooth Scanner
+* Polls /bt/data every 2s and updates the device table in place.
 * Pure ES modules, no framework, no dependencies.
 */
 var POLL_INTERVAL_MS = 2e3;
@@ -16,12 +16,12 @@ var warningEl;
 var warningTextEl;
 async function poll() {
 	try {
-		const res = await fetch("/bte/data");
+		const res = await fetch("/bt/data");
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		render(await res.json());
 	} catch (err) {
 		setStatus("ERROR", false);
-		console.error("[BTE] poll failed:", err);
+		console.error("[BT] poll failed:", err);
 	}
 }
 /**
@@ -36,7 +36,7 @@ function render(data) {
 	if (scan_warning) {
 		warningTextEl.textContent = scan_warning;
 		warningEl.classList.remove("hidden");
-		const modeEl = document.getElementById("bte-mode");
+		const modeEl = document.getElementById("bt-mode");
 		if (modeEl && scan_warning.toLowerCase().includes("classic")) modeEl.textContent = "BLE ONLY";
 	} else warningEl.classList.add("hidden");
 	const incomingMacs = new Set(devices.map((d) => d.mac));
@@ -130,12 +130,12 @@ function escHtml(str) {
 	return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 document.addEventListener("DOMContentLoaded", () => {
-	tbody = document.getElementById("bte-tbody");
-	statusBadge = document.getElementById("bte-status");
-	countEl = document.getElementById("bte-count");
-	lastScanEl = document.getElementById("bte-last-scan");
-	warningEl = document.getElementById("bte-warning");
-	warningTextEl = document.getElementById("bte-warning-text");
+	tbody = document.getElementById("bt-tbody");
+	statusBadge = document.getElementById("bt-status");
+	countEl = document.getElementById("bt-count");
+	lastScanEl = document.getElementById("bt-last-scan");
+	warningEl = document.getElementById("bt-warning");
+	warningTextEl = document.getElementById("bt-warning-text");
 	setStatus("CONNECTING", false);
 	poll();
 	setInterval(poll, POLL_INTERVAL_MS);

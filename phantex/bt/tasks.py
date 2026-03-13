@@ -1,4 +1,4 @@
-"""BTE background scan task.
+"""BT background scan task.
 
 The APScheduler job is defined here. It calls both scan functions from
 engine.py and merges results into the shared store.
@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
-from phantex.bte.engine import (
+from phantex.bt.engine import (
     _merge_records,
     _store_lock,
     scan_ble,
@@ -25,9 +25,9 @@ def run_scan(ble_duration: float = 3.0) -> None:
     Called by APScheduler on a fixed interval. Runs in a background thread
     so it must never touch Flask request context.
     """
-    import phantex.bte.engine as _engine
+    import phantex.bt.engine as _engine
 
-    logger.debug("BTE scan cycle starting")
+    logger.debug("BT scan cycle starting")
 
     ble_records, ble_warning = scan_ble(duration=ble_duration)
     classic_records, classic_warning = scan_classic()
@@ -43,7 +43,7 @@ def run_scan(ble_duration: float = 3.0) -> None:
         _engine._scan_warning = combined_warning
 
     logger.debug(
-        "BTE scan cycle complete: %d devices, warning=%s",
+        "BT scan cycle complete: %d devices, warning=%s",
         len(all_records),
         combined_warning,
     )

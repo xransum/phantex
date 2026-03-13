@@ -1,17 +1,17 @@
-"""BTE blueprint views -- /bte and /bte/data."""
+"""BT blueprint views -- /bt and /bt/data."""
 
 from __future__ import annotations
 
 from flask import jsonify, render_template
 
-from phantex.bte import bp
-from phantex.bte.engine import get_store_snapshot
+from phantex.bt import bp
+from phantex.bt.engine import get_store_snapshot
 
 
 @bp.get("/")
 def index() -> str:
-    """Render the BTE scanner page."""
-    return render_template("bte/index.html")
+    """Render the BT scanner page."""
+    return render_template("bt/index.html")
 
 
 @bp.get("/data")

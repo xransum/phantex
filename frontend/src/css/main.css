@@ -258,32 +258,32 @@ a:hover {
   color: var(--text-faint);
 }
 
-/* -- BTE page -------------------------------------------------------------- */
-.bte-page {
+/* -- BT page -------------------------------------------------------------- */
+.bt-page {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.bte-header {
+.bt-header {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-.bte-title-row {
+.bt-title-row {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.bte-title {
+.bt-title {
   font-size: 1.2rem;
   letter-spacing: 0.2em;
   color: var(--green-bright);
 }
 
-.bte-badge {
+.bt-badge {
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   padding: 0.15rem 0.5rem;
@@ -291,7 +291,7 @@ a:hover {
   color: var(--green-dim);
 }
 
-.bte-badge.scanning {
+.bt-badge.scanning {
   border-color: var(--green-bright);
   color: var(--green-bright);
   animation: pulse-border 1.5s ease-in-out infinite;
@@ -302,7 +302,7 @@ a:hover {
   50%       { opacity: 0.4; }
 }
 
-.bte-meta-row {
+.bt-meta-row {
   display: flex;
   gap: 0.75rem;
   font-size: 0.75rem;
@@ -315,7 +315,7 @@ a:hover {
 }
 
 /* -- Warning banner -------------------------------------------------------- */
-.bte-warning {
+.bt-warning {
   display: flex;
   gap: 0.5rem;
   align-items: flex-start;
@@ -326,7 +326,7 @@ a:hover {
   color: var(--amber);
 }
 
-.bte-warning.hidden {
+.bt-warning.hidden {
   display: none;
 }
 
@@ -335,23 +335,23 @@ a:hover {
   font-weight: 700;
 }
 
-/* -- BTE table ------------------------------------------------------------- */
-.bte-table-wrap {
+/* -- BT table ------------------------------------------------------------- */
+.bt-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border-active);
 }
 
-.bte-table {
+.bt-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8rem;
 }
 
-.bte-table thead tr {
+.bt-table thead tr {
   background: var(--green-faint);
 }
 
-.bte-table th {
+.bt-table th {
   text-align: left;
   padding: 0.5rem 0.75rem;
   color: var(--green-bright);
@@ -360,18 +360,18 @@ a:hover {
   white-space: nowrap;
 }
 
-.bte-table td {
+.bt-table td {
   padding: 0.45rem 0.75rem;
   border-bottom: 1px solid var(--border);
   color: var(--green-mid);
   white-space: nowrap;
 }
 
-.bte-table tbody tr:last-child td {
+.bt-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.bte-table tbody tr.row-new {
+.bt-table tbody tr.row-new {
   animation: row-fade-in 0.4s ease-out forwards;
 }
 
@@ -380,11 +380,11 @@ a:hover {
   to   { background: transparent; }
 }
 
-.bte-table tbody tr.row-stale td {
+.bt-table tbody tr.row-stale td {
   color: var(--text-faint);
 }
 
-.bte-table .empty-row td {
+.bt-table .empty-row td {
   text-align: center;
   color: var(--text-faint);
   padding: 2rem;

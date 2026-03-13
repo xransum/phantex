@@ -1,4 +1,4 @@
-"""Tests for the BTE scanner engine."""
+"""Tests for the BT scanner engine."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from phantex.bte.engine import (
+from phantex.bt.engine import (
     DeviceRecord,
     _device_store,
     _merge_records,
@@ -105,14 +105,14 @@ class TestGetStoreSnapshot:
 
 class TestScanClassic:
     def test_returns_empty_list_and_warning_when_hcitool_missing(self) -> None:
-        with patch("phantex.bte.engine.subprocess.run", side_effect=FileNotFoundError):
+        with patch("phantex.bt.engine.subprocess.run", side_effect=FileNotFoundError):
             records, warning = scan_classic()
         assert records == []
         assert warning is not None
         assert "hcitool" in warning.lower()
 
     def test_returns_warning_on_permission_error(self) -> None:
-        with patch("phantex.bte.engine.subprocess.run", side_effect=PermissionError):
+        with patch("phantex.bt.engine.subprocess.run", side_effect=PermissionError):
             records, warning = scan_classic()
         assert records == []
         assert warning is not None
@@ -123,7 +123,7 @@ class TestScanClassic:
         mock_result.returncode = 0
         mock_result.stdout = "Scanning ...\n\tAA:BB:CC:DD:EE:FF\tMyPhone\n"
         mock_result.stderr = ""
-        with patch("phantex.bte.engine.subprocess.run", return_value=mock_result):
+        with patch("phantex.bt.engine.subprocess.run", return_value=mock_result):
             records, warning = scan_classic()
         assert warning is None
         assert len(records) == 1

@@ -20,11 +20,11 @@ class BaseConfig:
     TESTING: bool = False
 
     # Bluetooth scan interval in seconds. BLE discovery runs for
-    # BTE_BLE_SCAN_DURATION seconds per cycle; the interval must be larger.
-    BTE_SCAN_INTERVAL: int = int(os.environ.get("PHANTEX_BTE_SCAN_INTERVAL", "5"))
-    BTE_BLE_SCAN_DURATION: float = float(os.environ.get("PHANTEX_BTE_BLE_SCAN_DURATION", "3.0"))
+    # BT_BLE_SCAN_DURATION seconds per cycle; the interval must be larger.
+    BT_SCAN_INTERVAL: int = int(os.environ.get("PHANTEX_BT_SCAN_INTERVAL", "5"))
+    BT_BLE_SCAN_DURATION: float = float(os.environ.get("PHANTEX_BT_BLE_SCAN_DURATION", "3.0"))
     # Seconds after which a device is considered stale in the store.
-    BTE_STALE_THRESHOLD: int = int(os.environ.get("PHANTEX_BTE_STALE_THRESHOLD", "30"))
+    BT_STALE_THRESHOLD: int = int(os.environ.get("PHANTEX_BT_STALE_THRESHOLD", "30"))
 
 
 class DevelopmentConfig(BaseConfig):
@@ -44,4 +44,4 @@ class TestingConfig(BaseConfig):
 
     TESTING: bool = True
     DEBUG: bool = True
-    BTE_SCAN_INTERVAL: int = 999  # prevent scheduler from firing during tests
+    BT_SCAN_INTERVAL: int = 999  # prevent scheduler from firing during tests

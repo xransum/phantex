@@ -18,7 +18,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "frontend/src/css/main.css"),
-        bte: resolve(__dirname, "frontend/src/js/bte.js"),
+        bt: resolve(__dirname, "frontend/src/js/bt.js"),
       },
       output: {
         entryFileNames: "[name].js",

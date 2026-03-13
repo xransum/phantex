@@ -46,18 +46,18 @@ def _configure_logging(app: Flask) -> None:
 
 
 def _register_extensions(app: Flask) -> None:
-    from phantex.bte.tasks import run_scan
+    from phantex.bt.tasks import run_scan
     from phantex.extensions import scheduler
 
     if not app.testing:
-        interval = app.config.get("BTE_SCAN_INTERVAL", 5)
-        ble_duration = app.config.get("BTE_BLE_SCAN_DURATION", 3.0)
+        interval = app.config.get("BT_SCAN_INTERVAL", 5)
+        ble_duration = app.config.get("BT_BLE_SCAN_DURATION", 3.0)
         scheduler.add_job(
             run_scan,
             trigger="interval",
             seconds=interval,
             kwargs={"ble_duration": ble_duration},
-            id="bte_scan",
+            id="bt_scan",
             replace_existing=True,
         )
         if not scheduler.running:
@@ -66,9 +66,9 @@ def _register_extensions(app: Flask) -> None:
 
 
 def _register_blueprints(app: Flask) -> None:
-    from phantex.bte import bp as bte_bp
+    from phantex.bt import bp as bt_bp
 
-    app.register_blueprint(bte_bp)
+    app.register_blueprint(bt_bp)
 
     @app.get("/")
     def index() -> str:

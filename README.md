@@ -8,7 +8,7 @@ modules coming.
 
 | Path | Name | Status |
 |------|------|--------|
-| `/bte` | Bluetooth Terminal Explorer | Active |
+| `/bt` | Bluetooth Scanner | Active |
 | `/wte` | Wireless Terminal Explorer | Coming soon |
 
 ## Quick start
