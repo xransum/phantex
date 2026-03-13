@@ -15,6 +15,29 @@ var deviceState = /* @__PURE__ */ new Map();
 * @type {Set<string>}
 */
 var historyState = /* @__PURE__ */ new Set();
+/**
+* Last-fetched history rows, kept so re-sorting does not require a new fetch.
+* @type {Array<object>}
+*/
+var _historyRows = [];
+/**
+* Sort state for the live device table.
+* col: field name (string) or null for default (newest first).
+* dir: 'asc' | 'desc' | null
+* @type {{ col: string|null, dir: string|null }}
+*/
+var liveSort = {
+	col: null,
+	dir: null
+};
+/**
+* Sort state for the history modal table.
+* @type {{ col: string|null, dir: string|null }}
+*/
+var historySort = {
+	col: null,
+	dir: null
+};
 var tbody;
 var statusBadge;
 var countEl;
@@ -90,7 +113,10 @@ function updateTable(now) {
 	for (const row of tbody.querySelectorAll("tr[data-mac]")) existingRows.set(row.dataset.mac, row);
 	const emptyRow = tbody.querySelector(".empty-row");
 	if (emptyRow) emptyRow.remove();
-	const sorted = [...deviceState.entries()].sort((a, b) => b[1].lastUpdated - a[1].lastUpdated);
+	const sorted = [...deviceState.entries()].sort((a, b) => {
+		if (liveSort.col) return compareRecords(a[1].record, b[1].record, liveSort.col, liveSort.dir);
+		return b[1].lastUpdated - a[1].lastUpdated;
+	});
 	for (const [mac, { record, lastUpdated }] of sorted) {
 		const isStale = now - lastUpdated > STALE_THRESHOLD_MS;
 		let row = existingRows.get(mac);
@@ -143,20 +169,22 @@ async function loadHistory() {
 	try {
 		const res = await fetch("/bt/history");
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
-		renderHistoryRows((await res.json()).devices || []);
+		_historyRows = (await res.json()).devices || [];
+		renderHistoryRows(_historyRows);
 	} catch (err) {
 		historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7" style="color:var(--red)">ERROR: ${escHtml(err.message)}</td></tr>`;
 	}
 }
 /**
-* @param {Array<object>} rows
+* @param {Array<object>} rows - source rows (unsorted original order preserved)
 */
 function renderHistoryRows(rows) {
 	if (!rows.length) {
 		historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7">NO HISTORY YET</td></tr>`;
 		return;
 	}
-	historyTbody.innerHTML = rows.map((r) => {
+	const display = historySort.col ? [...rows].sort((a, b) => compareRecords(a, b, historySort.col, historySort.dir)) : rows;
+	historyTbody.innerHTML = display.map((r) => {
 		const typeClass = r.device_type === "BLE" ? "type-ble" : "type-classic";
 		const rssi = r.rssi != null ? `${r.rssi} dBm` : "--";
 		const dc = r.device_class || "--";
@@ -176,6 +204,7 @@ async function clearHistory() {
 		const res = await fetch("/bt/history/clear", { method: "POST" });
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		historyState.clear();
+		_historyRows = [];
 		updateSeenCount();
 		historyTbody.innerHTML = `<tr class="empty-row"><td colspan="7">NO HISTORY YET</td></tr>`;
 		appendLog("device history cleared", "log-warn");
@@ -204,6 +233,66 @@ function appendLog(msg, cls) {
 	logBody.appendChild(entry);
 	while (logBody.children.length > LOG_MAX_ENTRIES) logBody.removeChild(logBody.firstChild);
 	logBody.scrollTop = logBody.scrollHeight;
+}
+/**
+* Compare two device records on a given field for sorting.
+* Nulls sort last regardless of direction.
+* @param {object} a
+* @param {object} b
+* @param {string} col - field name
+* @param {'asc'|'desc'} dir
+* @returns {number}
+*/
+function compareRecords(a, b, col, dir) {
+	let av = a[col] != null ? a[col] : null;
+	let bv = b[col] != null ? b[col] : null;
+	if (av === null && bv === null) return 0;
+	if (av === null) return 1;
+	if (bv === null) return -1;
+	if (col === "rssi") {
+		av = Number(av);
+		bv = Number(bv);
+	}
+	let cmp;
+	if (typeof av === "number" && typeof bv === "number") cmp = av - bv;
+	else cmp = String(av).localeCompare(String(bv));
+	return dir === "desc" ? -cmp : cmp;
+}
+/**
+* Cycle: null -> 'asc' -> 'desc' -> null
+* @param {string|null} current
+* @returns {string|null}
+*/
+function cycleDir(current) {
+	if (current === null) return "asc";
+	if (current === "asc") return "desc";
+	return null;
+}
+/**
+* Wire sort-click listeners to all th[data-col] inside a thead.
+* @param {HTMLTableElement} table
+* @param {{ col: string|null, dir: string|null }} sortState
+* @param {function} rerender - called after state changes to redraw the table
+*/
+function wireSortHeaders(table, sortState, rerender) {
+	const headers = table.querySelectorAll("thead th[data-col]");
+	headers.forEach((th) => {
+		th.addEventListener("click", () => {
+			const col = th.dataset.col;
+			if (sortState.col === col) {
+				sortState.dir = cycleDir(sortState.dir);
+				if (sortState.dir === null) sortState.col = null;
+			} else {
+				sortState.col = col;
+				sortState.dir = "asc";
+			}
+			headers.forEach((h) => {
+				if (h.dataset.col === sortState.col) h.setAttribute("aria-sort", sortState.dir === "asc" ? "ascending" : "descending");
+				else h.removeAttribute("aria-sort");
+			});
+			rerender();
+		});
+	});
 }
 /**
 * @param {string} label
@@ -257,6 +346,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (historyModal) historyModal.addEventListener("click", (e) => {
 		if (e.target === historyModal) closeHistoryModal();
 	});
+	const liveTable = document.getElementById("bt-table");
+	if (liveTable) wireSortHeaders(liveTable, liveSort, () => updateTable(Date.now()));
+	const historyTable = document.getElementById("bt-history-table");
+	if (historyTable) wireSortHeaders(historyTable, historySort, () => renderHistoryRows(_historyRows));
 	appendLog("scanner initializing...");
 	setStatus("CONNECTING", false);
 	poll();

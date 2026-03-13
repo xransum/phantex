@@ -360,6 +360,26 @@ a:hover {
   white-space: nowrap;
 }
 
+.bt-table th[data-col] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.bt-table th[data-col]::after {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  text-align: right;
+}
+
+.bt-table th[aria-sort="ascending"]::after {
+  content: ' \25b2';
+}
+
+.bt-table th[aria-sort="descending"]::after {
+  content: ' \25bc';
+}
+
 .bt-table td {
   padding: 0.45rem 0.75rem;
   border-bottom: 1px solid var(--border);

@@ -31,13 +31,13 @@
         <table class="bt-table" id="bt-history-table">
           <thead>
             <tr>
-              <th>MAC</th>
-              <th>NAME</th>
-              <th>TYPE</th>
-              <th>RSSI</th>
-              <th>CLASS</th>
-              <th>FIRST SEEN</th>
-              <th>LAST SEEN</th>
+              <th data-col="mac">MAC</th>
+              <th data-col="name">NAME</th>
+              <th data-col="device_type">TYPE</th>
+              <th data-col="rssi">RSSI</th>
+              <th data-col="device_class">CLASS</th>
+              <th data-col="first_seen">FIRST SEEN</th>
+              <th data-col="last_seen">LAST SEEN</th>
             </tr>
           </thead>
           <tbody id="bt-history-tbody">
@@ -58,18 +58,18 @@
 
   <div class="bt-table-wrap">
     <table class="bt-table" id="bt-table">
-      <thead>
-        <tr>
-          <th>MAC</th>
-          <th>NAME</th>
-          <th>TYPE</th>
-          <th>RSSI</th>
-          <th>CLASS</th>
-          <th>FIRST SEEN</th>
-          <th>LAST SEEN</th>
-        </tr>
-      </thead>
-      <tbody id="bt-tbody">
+        <thead>
+          <tr>
+            <th data-col="mac">MAC</th>
+            <th data-col="name">NAME</th>
+            <th data-col="device_type">TYPE</th>
+            <th data-col="rssi">RSSI</th>
+            <th data-col="device_class">CLASS</th>
+            <th data-col="first_seen">FIRST SEEN</th>
+            <th data-col="last_seen">LAST SEEN</th>
+          </tr>
+        </thead>
+        <tbody id="bt-tbody">
         <tr class="empty-row">
           <td colspan="7">SCANNING... AWAITING FIRST RESULT</td>
         </tr>
